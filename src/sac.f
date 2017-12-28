@@ -21,6 +21,7 @@ C     + + + LOCAL VARIABLES + + +
       CHARACTER*75 TITLES(3)
       CHARACTER*4 CER
       CHARACTER*1 SLPCODE
+      CHARACTER*132 ARG1
       DATA VERS/'2.0'/
 C     version number changed on 9/6/2012 from 2011a to 2.0 per K.Flynn's suggestion.  No other changes to source code.
 C     version 2011a code revised the previous version for batch or interactive operation
@@ -107,12 +108,24 @@ C     call statements here to hydie or c374in
       HUNIT(2)=9
       HUNIT(3)=11
       NSEC=30
-      CALL HYDSLP(HUNIT,NSEC,VERS,ERROR,RTITLE,SLPCODE,SI)
-      IF(ERROR.NE.0) GO TO 9999
-      CALL RDTABL(HUNIT(3),NSEC,SLPCODE,NXSEC,SECID,SRD,DELH,A,
-     #            QNVEY,ALPH,TOPW,WPERM,HYDRD,STAGE,
-     #            NROUGH,NSA,SUBPRP,TITLES)
-      IF(NXSEC.LE.0) GO TO 9999
+
+      CALL GETARG(1,ARG1)
+      IF (ARG1 == 'Case1.cgn') THEN
+        CALL HYDSLP_CGNS(HUNIT,NSEC,VERS,ERROR,RTITLE,SLPCODE,SI)
+        IF(ERROR.NE.0) GO TO 9999
+        CALL RDTABL(HUNIT(3),NSEC,SLPCODE,NXSEC,SECID,SRD,DELH,A,
+     #              QNVEY,ALPH,TOPW,WPERM,HYDRD,STAGE,
+     #              NROUGH,NSA,SUBPRP,TITLES)
+        IF(NXSEC.LE.0) GO TO 9999
+        P=6
+      ELSE
+        CALL HYDSLP(HUNIT,NSEC,VERS,ERROR,RTITLE,SLPCODE,SI)
+        IF(ERROR.NE.0) GO TO 9999
+        CALL RDTABL(HUNIT(3),NSEC,SLPCODE,NXSEC,SECID,SRD,DELH,A,
+     #              QNVEY,ALPH,TOPW,WPERM,HYDRD,STAGE,
+     #              NROUGH,NSA,SUBPRP,TITLES)
+        IF(NXSEC.LE.0) GO TO 9999
+      ENDIF
 C
 C ----  BEGIN FLOW-COMPUTATION PHASE --------------------
 C
