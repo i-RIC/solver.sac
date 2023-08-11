@@ -66,7 +66,7 @@ C
 C     + + + INITIALIZATIONS + + +
       DATA IOVER /1000/
 C
-c      WRITE(*,*)'IN SHYDIE AT TOP'
+C     WRITE(*,*)'IN SHYDIE AT TOP'
       ERRIO=FTEMP(2)
       KTS=1
       NCARDS=1
@@ -77,41 +77,43 @@ c      WRITE(*,*)'IN SHYDIE AT TOP'
       ERFG=0
       TBTYP(1)=0
 C
-c      WRITE(*,*)'IN HYDIE after inits',FILST
+C     WRITE(*,*)'IN HYDIE after inits',FILST
       IF(FILST.LE.2)THEN
-      IF(INTYP.EQ.1) THEN
-C     * call terminal input subroutine *
-        PRINT*,'NOT IMPLEMENTED'
-        GO TO 999
-      ELSE
-c       WRITE(*,*)'AT FILE OPENS'
-        OPEN(UNIT=FTEMP(1),STATUS='SCRATCH',ACCESS='DIRECT',
+        IF(INTYP.EQ.1) THEN
+C         * call terminal input subroutine *
+          PRINT*,'NOT IMPLEMENTED'
+          GO TO 999
+        ELSE
+C         WRITE(*,*)'AT FILE OPENS'
+          OPEN(UNIT=FTEMP(1),STATUS='SCRATCH',ACCESS='DIRECT',
      #       FORM='FORMATTED',RECL=80)
-        IJUNK=0
-        IF(FILST.LE.1.AND.FILST.NE.-3)THEN
-          OPEN(UNIT=FCARD,FILE=CDNAM,STATUS='OLD',ERR=999, IOSTAT=IJUNK)
-C  following statement changed from filst.le.-1 for use with mhydie driver
-c          IF(FILST.EQ.-1)THEN
-           IF(FILST.LE.-1)THEN
-            OPEN(UNIT=TBUNT,STATUS='SCRATCH')
-          ELSE
-            OPEN(UNIT=TBUNT,FILE=TBNAM,STATUS='NEW',IOSTAT=IJUNK)
+          IJUNK=0
+          IF(FILST.LE.1.AND.FILST.NE.-3) THEN
+            OPEN(UNIT=FCARD,FILE=CDNAM,STATUS='OLD',ERR=999,
+     #           IOSTAT=IJUNK)
+C           following statement changed from filst.le.-1 for use
+C           with mhydie driver
+C           IF(FILST.EQ.-1)THEN
+            IF(FILST.LE.-1)THEN
+              OPEN(UNIT=TBUNT,STATUS='SCRATCH')
+            ELSE
+              OPEN(UNIT=TBUNT,FILE=TBNAM,STATUS='NEW',IOSTAT=IJUNK)
+            ENDIF
+          ENDIF
+C         WRITE(*,*)'PRE INTYP IF',INTYP
+          IF (INTYP.EQ.2) THEN
+C           * open WSPRO file and transfer into temp DA *
+            CALL WSPDA (FCARD,FTEMP,NCOMP,COMP,ISEC,SECPRP,ELID,NCARDS,
+     #                  NHDR,TBTYP,XSREC,NOUT,OPOUT,TITLES,SI,ERFG)
+          ELSE IF(INTYP.EQ.3)THEN
+C           * open XHYDRP file and transfer into temp DA*
+            CALL HYDDA (FCARD,FTEMP,NCARDS,NCOMP,COMP,NHDR,SECPRP,ELID,
+     #                  TBTYP,XSREC,NOUT,OPOUT,ERFG)
+            ISEC=NHDR
           ENDIF
         ENDIF
-c        WRITE(*,*)'PRE INTYP IF',INTYP
-        IF (INTYP.EQ.2) THEN
-C     * open WSPRO file and transfer into temp DA *
-        CALL WSPDA (FCARD,FTEMP,NCOMP,COMP,ISEC,SECPRP,ELID,NCARDS,
-     #              NHDR,TBTYP,XSREC,NOUT,OPOUT,TITLES,SI,ERFG)
-        ELSE IF(INTYP.EQ.3)THEN
-C     * open XHYDRP file and transfer into temp DA*
-        CALL HYDDA (FCARD,FTEMP,NCARDS,NCOMP,COMP,NHDR,SECPRP,ELID,
-     #               TBTYP,XSREC,NOUT,OPOUT,ERFG)
-        ISEC=NHDR
-        ENDIF
-       ENDIF
       ELSE
-         CALL DACOMP(FTEMP,
+        CALL DACOMP(FTEMP,
      O                 NCOMP,COMP,ISEC,SECPRP,ELID,NCARDS,NHDR,TBTYP,
      #                 XSREC,NOUT,OPOUT)
       ENDIF
@@ -128,8 +130,8 @@ C     *** program SAC
           FILST=-1
         ENDIF
       ELSE IF (FILST.EQ.-3) THEN
-C     *** patch for eliminating *TT record for WSPRO input in culvert
-C     *** program CAP
+C       *** patch for eliminating *TT record for WSPRO input in culvert
+C       *** program CAP
         IF(TBTYP(1).EQ.0) THEN
           FILST=2
           TBTYP(1)=5
@@ -139,13 +141,11 @@ C     *** program CAP
       ENDIF
 C
       IF(ERFG.EQ.1) GO TO 999
-      
-
 
       IF(NCOMP.EQ.0.AND.ISEC.EQ.0.AND.FILST.LT.0) THEN
 C       * no computations to be made *
         II=3
-C        OPEN(UNIT=TBUNT,FILE='OUTFL',STATUS='NEW')
+C       OPEN(UNIT=TBUNT,FILE='OUTFL',STATUS='NEW')
         CALL WSPSEQ(FTEMP(1),TBUNT,NCARDS)
       ELSE IF(TBTYP(1).EQ.5.AND.NCOMP.EQ.0)THEN
         FLGS(1)=3
@@ -161,41 +161,41 @@ C        OPEN(UNIT=TBUNT,FILE='OUTFL',STATUS='NEW')
         N=0
         NRUF=0
         NSIN=0
-      IF(NCOMP.GT.0) THEN
-        I=0
-        BRNF=I
-        IF(FILST.LE.0)THEN
-          NSECT=NHDR
-        ELSE
-          NSECT=NID
-        ENDIF
-        DO 25 K=1,NSECT
-          EDF=0
-          IF(FILST.GT.0) THEN
-            IHDR=FNDXSC(IDLST(K),FTEMP(1),XSREC,NHDR)
-            IF(IHDR.GT.0) THEN
-              IREC=XSREC(IHDR)
-              EREC=XSREC(IHDR+1)-1
-              IF(IHDR.EQ.NHDR) EREC=NCARDS
-            ELSE
-              FLGS(K)=-1
-              ERRNO=13
-              CALL ERRPRT(ERRIO,ERRNO,IOVER,IDLST(K))
-            ENDIF
+        IF(NCOMP.GT.0) THEN
+          I=0
+          BRNF=I
+          IF(FILST.LE.0)THEN
+            NSECT=NHDR
           ELSE
-            IREC=XSREC(K)
-            IF((K+1).GT.NHDR)THEN
-              EREC=NCARDS
-            ELSE
-              EREC=XSREC(K+1)-1
-            ENDIF
+            NSECT=NID
           ENDIF
-          IF(FLGS(K).EQ.-1) GO TO 25
-          IF(BRNF.NE.FLGS(K))THEN
-            MATCH=0
-            IOLD=I
-            NSTOP=NCOMP
- 30         CONTINUE
+          DO 25 K=1,NSECT
+            EDF=0
+            IF(FILST.GT.0) THEN
+              IHDR=FNDXSC(IDLST(K),FTEMP(1),XSREC,NHDR)
+              IF(IHDR.GT.0) THEN
+                IREC=XSREC(IHDR)
+                EREC=XSREC(IHDR+1)-1
+                IF(IHDR.EQ.NHDR) EREC=NCARDS
+              ELSE
+                FLGS(K)=-1
+                ERRNO=13
+                CALL ERRPRT(ERRIO,ERRNO,IOVER,IDLST(K))
+              ENDIF
+            ELSE
+              IREC=XSREC(K)
+              IF((K+1).GT.NHDR)THEN
+                EREC=NCARDS
+              ELSE
+                EREC=XSREC(K+1)-1
+              ENDIF
+            ENDIF
+            IF(FLGS(K).EQ.-1) GO TO 25
+            IF(BRNF.NE.FLGS(K))THEN
+              MATCH=0
+              IOLD=I
+              NSTOP=NCOMP
+ 30           CONTINUE
               IF(I.LT.NSTOP)THEN
                 I=I+1
               ENDIF
@@ -207,188 +207,188 @@ C        OPEN(UNIT=TBUNT,FILE='OUTFL',STATUS='NEW')
                 NSTOP=IOLD
                 I=0
               ENDIF
-            IF(MATCH.NE.1.AND.I.LT.NSTOP) GO TO 30
-C           compute area knots for branch
-            IF(I.EQ.0)THEN
-              I=1
-              NSTOP=NCOMP
-              MATCH=1
+              IF(MATCH.NE.1.AND.I.LT.NSTOP) GO TO 30
+C             compute area knots for branch
+              IF(I.EQ.0)THEN
+                I=1
+                NSTOP=NCOMP
+                MATCH=1
+              ENDIF
+c             WRITE(*,*)'MATCH, BRANCH AFTER IF',MATCH,BRANCH,I
+Cwrite        READ(*,*)IXXXK
+              IF(COMP(1,I).LT.2.AND.MATCH.EQ.1) THEN
+                NKTS=INT(COMP(4,I))
+                IF(TBTYP(1).EQ.5) NKTS=25
+                CALL KNOTS(NKTS,COMP(2,I),COMP(3,I),COMP(5,I),X,ERR)
+              ELSE IF(MATCH.NE.1) THEN
+                ERRNO=16
+                CALL ERRPRT(ERRIO,ERRNO,FLGS(K),IDLST(K))
+              ENDIF
             ENDIF
-c           WRITE(*,*)'MATCH, BRANCH AFTER IF',MATCH,BRANCH,I
-Cwrite            READ(*,*)IXXXK
-            IF(COMP(1,I).LT.2.AND.MATCH.EQ.1) THEN
+            IF(MATCH.EQ.0) GO TO 25
+c           WRITE(*,*)'PRE WSPCDS CALL',TBTYP(1),TBTYP(2)
+            CALL WSPCDS(FTEMP,IREC,EREC,S,G,N,NSA,XSA,NRUF,RUF,NSIN,
+     #                  SIN,SECID,SRD,SI,EDF)
+            IF(EDF.GT.1) FLGS(K)=-1*EDF
+            IF(EDF.GT.0) GO TO 25
+            IF(COMP(1,I).GE.2)THEN
+              J=IXMIN(G,N)
+              MINDEP=G(J)+COMP(2,I)
+              MAXDEP=G(J)+COMP(3,I)
               NKTS=INT(COMP(4,I))
               IF(TBTYP(1).EQ.5) NKTS=25
-              CALL KNOTS(NKTS,COMP(2,I),COMP(3,I),COMP(5,I),X,ERR)
-            ELSE IF(MATCH.NE.1) THEN
-              ERRNO=16
-              CALL ERRPRT(ERRIO,ERRNO,FLGS(K),IDLST(K))
-            ENDIF
-          ENDIF
-          IF(MATCH.EQ.0) GO TO 25
-c         WRITE(*,*)'PRE WSPCDS CALL',TBTYP(1),TBTYP(2)
-          CALL WSPCDS(FTEMP,IREC,EREC,S,G,N,NSA,XSA,NRUF,RUF,NSIN,
-     #                SIN,SECID,SRD,SI,EDF)
-          IF(EDF.GT.1) FLGS(K)=-1*EDF
-          IF(EDF.GT.0) GO TO 25
-          IF(COMP(1,I).GE.2)THEN
-            J=IXMIN(G,N)
-            MINDEP=G(J)+COMP(2,I)
-            MAXDEP=G(J)+COMP(3,I)
-            NKTS=INT(COMP(4,I))
-            IF(TBTYP(1).EQ.5) NKTS=25
 C	      write(*,*)nkts,mindep,maxdep,comp(5,I),x
-            CALL KNOTS(NKTS,MINDEP,MAXDEP,COMP(5,I),X,ERR)
-            DO 20 II=1,NKTS
-          CALL PROPER(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT,SUBPRP
-     #     ,KXND)
-        IF(TBTYP(1).EQ.2) THEN
-          IF(II.EQ.1)THEN
-            DATUM=POUT(13,1)-POUT(14,1)
-            WRITE(TBUNT,210) SECID,SRD,DATUM
- 210        FORMAT('HY',1X,A16,1X,F10.1,1X,F10.2)
-          ENDIF
-          CALL HYDOUT(TBUNT,SRD,KTS,POUT,SECID)
-        ELSE IF(TBTYP(1).EQ.3) THEN
-          CALL OUTTAB(TBUNT,KTS,NOUT,OPOUT,POUT)
-        ELSE IF(TBTYP(1).EQ.1) THEN
-          IF(II.EQ.1)THEN
-            WRITE(TBUNT,222) NKTS,SECID
- 222        FORMAT(I2,1X,A16)
-          ENDIF       
-          CALL BRNOUT(TBUNT,KTS,POUT)
-        ELSE IF(TBTYP(1).EQ.4) THEN
-          CALL SLPOUT(TBUNT,SRD,SECID,KTS,POUT,NSA,SUBPRP)
-        ELSE IF(TBTYP(1).EQ.5) THEN
-          CALL CULOUT(SRD,SECID,II,NKTS,POUT)
-        ENDIF
- 20         CONTINUE
-          ELSE
-            DO 15 II=1,NKTS
-              CALL STAGE(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT
-     #                   ,SUBPRP,KXND,ERFG)
-              IF(ERFG.NE.0)THEN
-                ERRNO=13+ERFG
-                CALL ERRPRT(ERRIO,ERRNO,IOVER,SECID)
-              ELSE
-        IF(TBTYP(1).EQ.2) THEN
-          IF(II.EQ.1)THEN
-            DATUM=POUT(13,1)-POUT(14,1)
-            WRITE(TBUNT,210) SECID,SRD,DATUM
-          ENDIF
-          CALL HYDOUT(TBUNT,SRD,KTS,POUT,SECID)
-        ELSE IF(TBTYP(1).EQ.3) THEN
-          CALL OUTTAB(TBUNT,KTS,NOUT,OPOUT,POUT)
-        ELSE IF(TBTYP(1).EQ.1) THEN
-          IF(II.EQ.1)THEN
-            WRITE(TBUNT,222) NKTS,SECID
-          ENDIF
-          CALL BRNOUT(TBUNT,KTS,POUT)
-        ELSE IF(TBTYP(1).EQ.4) THEN
-          CALL SLPOUT(TBUNT,SRD,SECID,KTS,POUT,NSA,SUBPRP)
-        ELSE IF(TBTYP(1).EQ.5) THEN
-          CALL CULOUT(SRD,SECID,II,NKTS,POUT)
-        ENDIF
-              ENDIF
- 15         CONTINUE
-          ENDIF
- 25   CONTINUE
-      ENDIF
-C
-      IF(ISEC.GT.0.AND.NCOMP.EQ.0) THEN
-      DO 35 K=1,ISEC
-        EDF=0
-        IF(NOHP.EQ.-1)THEN
-C
-        IF(SECPRP(2,K).NE.0)THEN
-          RATIO=1.0
-          NKTS=INT( (SECPRP(3,K)-SECPRP(1,K))/SECPRP(2,K) )+1
-        ELSE
-          NKTS=1
-        ENDIF
-        CALL KNOTS(NKTS,SECPRP(1,K),SECPRP(3,K),RATIO,X,ERR)
-        IREC=FNDXSC(ELID(K),FTEMP(1),XSREC,NHDR)
-        IF(IREC.GT.0) THEN
-          IF((IREC+1).GT.NHDR) THEN
-            EREC=NCARDS
-          ELSE
-            EREC=XSREC(IREC+1)-1
-          ENDIF
-          IREC=XSREC(IREC)
-          EDF=0
-          CALL WSPCDS(FTEMP,IREC,EREC,S,G,N,NSA,XSA,NRUF,RUF,NSIN
-     #                ,SIN,SECID,SRD,SI,EDF)
-        ENDIF
-C
-        ELSE
-          KK=0
-          SL1=16
-          IREC=XSREC(K)
-          IF((K+1).GT.NHDR) THEN
-            EREC=NCARDS
-          ELSE
-            EREC=XSREC(K+1)-1
-          ENDIF
-          IREC=XSREC(K)
-          EDF=0
-          CALL WSPCDS(FTEMP,IREC,EREC,S,G,N,NSA,XSA,NRUF,RUF,NSIN
-     #                ,SIN,SECID,SRD,SI,EDF)
-          IF(EDF.GT.0) GO TO 35
- 50       CONTINUE
-          KK=KK+1
-          NOMAT=MATSTR(SECID,ELID(KK),SL1,SL1)
-          IF(NOMAT.NE.1.AND.KK.LT.NOHP) GO TO 50
-          IF(NOMAT.EQ.1) THEN
-C           HP record exists for that secid, use it for w.s. el
-            IF(SECPRP(2,K).NE.0)THEN
-              RATIO=1.0
-              NKTS=INT((SECPRP(3,K)-SECPRP(1,K))/SECPRP(2,K) )+1
+              CALL KNOTS(NKTS,MINDEP,MAXDEP,COMP(5,I),X,ERR)
+              DO 20 II=1,NKTS
+                CALL PROPER(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT,SUBPRP
+     #                      ,KXND)
+                IF(TBTYP(1).EQ.2) THEN
+                  IF(II.EQ.1) THEN
+                    DATUM=POUT(13,1)-POUT(14,1)
+                    WRITE(TBUNT,210) SECID,SRD,DATUM
+ 210                FORMAT('HY',1X,A16,1X,F10.1,1X,F10.2)
+                  ENDIF
+                  CALL HYDOUT(TBUNT,SRD,KTS,POUT,SECID)
+                ELSE IF(TBTYP(1).EQ.3) THEN
+                  CALL OUTTAB(TBUNT,KTS,NOUT,OPOUT,POUT)
+                ELSE IF(TBTYP(1).EQ.1) THEN
+                  IF(II.EQ.1)THEN
+                    WRITE(TBUNT,222) NKTS,SECID
+ 222                FORMAT(I2,1X,A16)
+                  ENDIF       
+                  CALL BRNOUT(TBUNT,KTS,POUT)
+                ELSE IF(TBTYP(1).EQ.4) THEN
+                  CALL SLPOUT(TBUNT,SRD,SECID,KTS,POUT,NSA,SUBPRP)
+                ELSE IF(TBTYP(1).EQ.5) THEN
+                  CALL CULOUT(SRD,SECID,II,NKTS,POUT)
+                ENDIF
+ 20           CONTINUE
             ELSE
-              NKTS=1
+              DO 15 II=1,NKTS
+                CALL STAGE(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT
+     #                     ,SUBPRP,KXND,ERFG)
+                IF(ERFG.NE.0)THEN
+                  ERRNO=13+ERFG
+                  CALL ERRPRT(ERRIO,ERRNO,IOVER,SECID)
+                ELSE
+                  IF(TBTYP(1).EQ.2) THEN
+                    IF(II.EQ.1)THEN
+                      DATUM=POUT(13,1)-POUT(14,1)
+                      WRITE(TBUNT,210) SECID,SRD,DATUM
+                    ENDIF
+                    CALL HYDOUT(TBUNT,SRD,KTS,POUT,SECID)
+                  ELSE IF(TBTYP(1).EQ.3) THEN
+                    CALL OUTTAB(TBUNT,KTS,NOUT,OPOUT,POUT)
+                  ELSE IF(TBTYP(1).EQ.1) THEN
+                    IF(II.EQ.1)THEN
+                      WRITE(TBUNT,222) NKTS,SECID
+                    ENDIF
+                    CALL BRNOUT(TBUNT,KTS,POUT)
+                  ELSE IF(TBTYP(1).EQ.4) THEN
+                    CALL SLPOUT(TBUNT,SRD,SECID,KTS,POUT,NSA,SUBPRP)
+                  ELSE IF(TBTYP(1).EQ.5) THEN
+                    CALL CULOUT(SRD,SECID,II,NKTS,POUT)
+                  ENDIF
+                ENDIF
+ 15           CONTINUE
             ENDIF
-            CALL KNOTS(NKTS,SECPRP(1,K),SECPRP(3,K),RATIO,X,ERR)
-          ELSE IF(S(1).EQ.S(N)) THEN
-            NKTS=IXMAX(G,N)
-            X(1)=G(NKTS)+0.5
-            NKTS=1
-          ELSE
-C           error, no HP record for nonenclosed section -SAC error
-            ERRNO=19
-            CALL ERRPRT(ERRIO,ERRNO,IOVER,SECID)
-          ENDIF
+ 25       CONTINUE
         ENDIF
 C
-          IF(EDF.GT.1) FLGS(K)=-1*EDF
-          IF(EDF.GT.0) GO TO 35
-            DO 45 II=1,NKTS
-           CALL PROPER(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT,SUBPRP,
-     #                 KXND)
-C           * write property tables *
-          IF(TBTYP(1).EQ.2) THEN
-            IF(II.EQ.1)THEN
-              DATUM=POUT(13,1)-POUT(14,1)
-              WRITE(TBUNT,210) SECID,SRD,DATUM
+        IF(ISEC.GT.0.AND.NCOMP.EQ.0) THEN
+          DO 35 K=1,ISEC
+            EDF=0
+            IF(NOHP.EQ.-1)THEN
+C
+              IF(SECPRP(2,K).NE.0)THEN
+                RATIO=1.0
+                NKTS=INT( (SECPRP(3,K)-SECPRP(1,K))/SECPRP(2,K) )+1
+              ELSE
+                NKTS=1
+              ENDIF
+              CALL KNOTS(NKTS,SECPRP(1,K),SECPRP(3,K),RATIO,X,ERR)
+              IREC=FNDXSC(ELID(K),FTEMP(1),XSREC,NHDR)
+              IF(IREC.GT.0) THEN
+                IF((IREC+1).GT.NHDR) THEN
+                  EREC=NCARDS
+                ELSE
+                  EREC=XSREC(IREC+1)-1
+                ENDIF
+                IREC=XSREC(IREC)
+                EDF=0
+                CALL WSPCDS(FTEMP,IREC,EREC,S,G,N,NSA,XSA,NRUF,RUF,NSIN
+     #                      ,SIN,SECID,SRD,SI,EDF)
+              ENDIF
+C
+            ELSE
+              KK=0
+              SL1=16
+              IREC=XSREC(K)
+              IF((K+1).GT.NHDR) THEN
+                EREC=NCARDS
+              ELSE
+                EREC=XSREC(K+1)-1
+              ENDIF
+              IREC=XSREC(K)
+              EDF=0
+              CALL WSPCDS(FTEMP,IREC,EREC,S,G,N,NSA,XSA,NRUF,RUF,NSIN
+     #                    ,SIN,SECID,SRD,SI,EDF)
+              IF(EDF.GT.0) GO TO 35
+ 50           CONTINUE
+              KK=KK+1
+              NOMAT=MATSTR(SECID,ELID(KK),SL1,SL1)
+              IF(NOMAT.NE.1.AND.KK.LT.NOHP) GO TO 50
+              IF(NOMAT.EQ.1) THEN
+C               HP record exists for that secid, use it for w.s. el
+                IF(SECPRP(2,K).NE.0)THEN
+                  RATIO=1.0
+                  NKTS=INT((SECPRP(3,K)-SECPRP(1,K))/SECPRP(2,K) )+1
+                ELSE
+                  NKTS=1
+                ENDIF
+                CALL KNOTS(NKTS,SECPRP(1,K),SECPRP(3,K),RATIO,X,ERR)
+              ELSE IF(S(1).EQ.S(N)) THEN
+                NKTS=IXMAX(G,N)
+                X(1)=G(NKTS)+0.5
+                NKTS=1
+              ELSE
+C               error, no HP record for nonenclosed section -SAC error
+                ERRNO=19
+                CALL ERRPRT(ERRIO,ERRNO,IOVER,SECID)
+              ENDIF
             ENDIF
-            CALL HYDOUT(TBUNT,SRD,KTS,POUT,SECID)
-          ELSE IF(TBTYP(1).EQ.3) THEN
-            CALL OUTTAB(TBUNT,KTS,NOUT,OPOUT,POUT)
-          ELSE IF(TBTYP(1).EQ.1) THEN
-            CALL BRNOUT(TBUNT,KTS,POUT)
-          ELSE IF(TBTYP(1).EQ.4) THEN
-            CALL SLPOUT(TBUNT,SRD,SECID,KTS,POUT,NSA,SUBPRP)
-          ELSE IF(TBTYP(1).EQ.5) THEN
-            CALL CULOUT(SRD,SECID,II,NKTS,POUT)
-          ENDIF
- 45         CONTINUE
-c        ELSE
-c          ERRNO=13
-c          CALL ERRPRT(ERRIO,ERRNO,IOVER,ELID(K))
-c        ENDIF
-35    CONTINUE
-      ENDIF
+C
+            IF(EDF.GT.1) FLGS(K)=-1*EDF
+            IF(EDF.GT.0) GO TO 35
+            DO II=1,NKTS
+              CALL PROPER(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT,SUBPRP,
+     #                    KXND)
+C             * write property tables *
+              IF(TBTYP(1).EQ.2) THEN
+                IF(II.EQ.1)THEN
+                  DATUM=POUT(13,1)-POUT(14,1)
+                  WRITE(TBUNT,210) SECID,SRD,DATUM
+                ENDIF
+                CALL HYDOUT(TBUNT,SRD,KTS,POUT,SECID)
+              ELSE IF(TBTYP(1).EQ.3) THEN
+                CALL OUTTAB(TBUNT,KTS,NOUT,OPOUT,POUT)
+              ELSE IF(TBTYP(1).EQ.1) THEN
+                CALL BRNOUT(TBUNT,KTS,POUT)
+              ELSE IF(TBTYP(1).EQ.4) THEN
+                CALL SLPOUT(TBUNT,SRD,SECID,KTS,POUT,NSA,SUBPRP)
+              ELSE IF(TBTYP(1).EQ.5) THEN
+                CALL CULOUT(SRD,SECID,II,NKTS,POUT)
+              ENDIF
+            END DO
+c             ELSE
+c               ERRNO=13
+c               CALL ERRPRT(ERRIO,ERRNO,IOVER,ELID(K))
+c             ENDIF
+35        CONTINUE
+        ENDIF
       ENDIF
 999   CONTINUE
-       FILST=3
+      FILST=3
 C
       RETURN
       END
@@ -500,7 +500,7 @@ C     * found WSPRO hydraulic prop card *
           XSREC(NHDR)=NCARDS
         ENDIF
       ENDIF
-        WRITE(FTEMP(1),100,REC=NCARDS)CODE,OPT,CBUF
+      WRITE(FTEMP(1),100,REC=NCARDS)CODE,OPT,CBUF
       GO TO 5
  998  CONTINUE
       WRITE(FTEMP(1),'(I4)',REC=1)NCARDS
@@ -563,19 +563,19 @@ C
       KNATS(KNTS)=AMAX
       KNATS(1)=AMIN
       IF(KNTS.GT.1) THEN
-      IF(RATIO.GT.0.0) THEN
-        IF(ABS(RATIO-1.0).GT.1.0E-06) THEN
-          ADX=XDIF*(1.0-RATIO)/(1.0-RATIO**KNOTSM)
+        IF(RATIO.GT.0.0) THEN
+          IF(ABS(RATIO-1.0).GT.1.0E-06) THEN
+            ADX=XDIF*(1.0-RATIO)/(1.0-RATIO**KNOTSM)
+          ELSE
+            ADX=XDIF/KNOTSM
+          ENDIF
+          DO 10 N=2,KNOTSM
+            DX=ADX*RATIO**(N-2)
+            KNATS(N)=KNATS(N-1)+DX
+ 10       CONTINUE
         ELSE
-          ADX=XDIF/KNOTSM
+          ERR=1
         ENDIF
-        DO 10 N=2,KNOTSM
-          DX=ADX*RATIO**(N-2)
-          KNATS(N)=KNATS(N-1)+DX
- 10     CONTINUE
-      ELSE
-        ERR=1
-      ENDIF
       ENDIF
 C
       RETURN
@@ -1996,7 +1996,7 @@ C     SECID   - section ID at which error occurred.
 C
 C     + + + LOCAL VARIABLES + + +
       INTEGER IO
-      CHARACTER*57 ERRSTG(21)
+      CHARACTER*57 ERRSTG(22)
 C
 C     + + + INITIALIZATIONS + + +
       DATA (ERRSTG(I), I=1,15) /
@@ -2015,13 +2015,14 @@ C     + + + INITIALIZATIONS + + +
      # ' No ID found in input data file that matches wanted - ID ',
      # ' x,y coordinates are ordered funny ------------------ ID ',
      # ' area computation fails set error tolerance of 0.005- ID '/
-      DATA (ERRSTG(I), I=16,21) /
+      DATA (ERRSTG(I), I=16,22) /
      # ' Branch no., no computations specified -------------- ID ',
      # ' no x, y coordinates entered  ----------------------- ID ',
      # ' no roughness values entered  ----------------------- ID ',
      # ' no HP record entered for cross section ------------- ID ',
      # ' range on *PD swapped to ascending order-------------    ',
-     # ' RATIO on *PD set to default of 1--------------------    '
+     # ' RATIO on *PD set to default of 1--------------------    ',
+     # ' Water-surface elevation has not been entered-------- ID '
      #/
 C
 C     + + + FORMATS + + +
@@ -2417,7 +2418,7 @@ C     elevation of the banks.
 C
 C    + + + DUMMY ARGUMENTS + + +
       INTEGER N,NSA,KXTEND
-      REAL S(N),G(N),XSA(NSA),SUBPRP(7,NSA),LEL,REL,XI
+      REAL S(N),G(N),XSA(NSA+1),SUBPRP(7,NSA+1),LEL,REL,XI
 C
 C     * * * ARGUMENT DEFINITIONS * * *
 C          S - station (distance)
