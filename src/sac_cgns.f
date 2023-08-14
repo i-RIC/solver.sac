@@ -1,8 +1,7 @@
       SUBROUTINE HYDSLP_CGNS
      #           (HUNIT,NSEC,VERS,ERR,RTITLE,SLPCODE,SI)
+      USE iric
       IMPLICIT NONE
-      
-      include 'cgnslib_f.h'
 
 C     + + + PURPOSE + + +
 C     HYDSLP_CGNS is the subroutine to read data from CGNS file.
@@ -59,25 +58,24 @@ C     In case launched from iRIC, result is output into STDOUT.
       WRITE(OFILE,'(A)')'Echo input data file '
       WRITE(OFILE,702) RTITLE
       
-      CALL CG_OPEN_F('Case1.cgn',CG_MODE_MODIFY,CGNSID,IER)
-      CALL CG_IRIC_INIT_F(CGNSID,IER)
+      CALL CG_IRIC_OPEN('Case1.cgn',IRIC_MODE_MODIFY,CGNSID,IER)
       
 C     read SI
-      CALL CG_IRIC_READ_INTEGER_F('units',SI,IER)
+      CALL CG_IRIC_READ_INTEGER(CGNSID,'units',SI,IER)
       
       WRITE(0,101) 'SI        ' // TRIM(ITOSTR(SI))
 
 C     read *TT record
-      CALL CG_IRIC_READ_INTEGER_F('SLPCODE',SLPCODE_INT,IER)
+      CALL CG_IRIC_READ_INTEGER(CGNSID,'SLPCODE',SLPCODE_INT,IER)
       IF(SLPCODE_INT == 0) THEN
         SLPCODE=' '
       ELSE IF(SLPCODE_INT == 1) THEN
         SLPCODE='1'
       ENDIF
 
-      CALL HYDIE_CGNS(TBUNT,FTEMP,NID,ELID,FLGS,SI,FILST)
+      CALL HYDIE_CGNS(CGNSID,TBUNT,FTEMP,NID,ELID,FLGS,SI,FILST)
       
-      CALL CG_CLOSE_F(CGNSID,IER)
+      CALL CG_IRIC_CLOSE(CGNSID,IER)
       REWIND(UNIT=TBUNT)
 
       RETURN
