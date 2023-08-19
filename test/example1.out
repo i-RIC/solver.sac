@@ -1,0 +1,111 @@
+SAC -USGS slope-area program Ver 2.0                                    page  0
+
+Echo input data file 
+Slope-area reach example with level-water surface in cross sections             
+XS   SEC3 1000                                                                  
+GR        -121,98.8 -106.,98.1 -90.,94.4 -85.,90.9 -80.,88.7                    
+GR        -75.,88.7 -70.,89.4 -65.,90.7 -60.,90.9 -54.,91.2 -51.,95.5           
+GR        0.,97.2 67.,97.6 83.,98.7                                             
+N         0.035 0.040 0.030                                                     
+SA        -106. -51.                                                            
+HP   SEC3 98.75                                                                 
+XS   SEC2 1380                                                                  
+GR        2.,99. 15.,97.7 27.,97.6 33.,91. 38.,89.8 43.,89.8 48.,90.2           
+GR        53.,90.4 58.,90.5 60.,91.1 68.,95.8 78.,97.8 185.,99.2                
+GR        234.,99.4                                                             
+N         0.030 0.037 0.030                                                     
+SA        27. 78.                                                               
+HP   SEC2 99.20                                                                 
+XS   SEC1 1666.                                                                 
+GR        12.1,99.6 16.,98.9 26.,98.5 30.,93. 32.,90.5 37.,91.2 42.,90.9        
+GR        47.,91.6 52.,92.2 57.,92.6 62.,93.2 67.,91.7 72.,93. 82.,98.4         
+GR        255.,99. 265.1,99.9                                                   
+N         0.030 0.045 0.030                                                     
+SA        26. 82.                                                               
+HP   SEC1 99.75                                                                 
+SAC -USGS slope-area program Ver 2.0                                    page  1
+
+Slope-area reach example with level-water surface in cross sections             
+EXAMPLE1:  Simple reach data                                               
+                                                                           
+                                                                           
+
+                             DISCHARGE COMPUTATIONS
+                      Reach
+             dH,fall  length  Discharge  Spread    HF     CX     RC     RX  ER
+               (m)      (m)      (cms)     (%)    (m)
+ SEC1 - SEC2  0.168     87.2       54.5      0  0.1195  1.000  0.403  0.000     
+ SEC2 - SEC3  0.137    115.8       59.7     26  0.1692  0.876  0.000 -0.378 *   
+
+ SEC1 - SEC3  0.305    203.0       56.6      9  0.2815  0.952  0.185 -0.205     
+
+Definitions:
+  Spread, the percent difference between discharge computed with no expansion
+      loss (k=0) and discharge computed with full expansion loss (k=1.0), divided
+      by the discharge computed with full expansion loss
+  HF, friction head- HF = sum of Q*Q*L/(K1*K2) over subreaches; Q, discharge;
+      L, reach length; K1, upstream section conveyance;
+      K2, downstream section conveyance
+  CX, the computed discharge divided by the discharge computed with no expansion
+      loss (k=0)
+  RC, velocity head change in contracting section divided by friction head
+  RX, velocity head change in expanding section divided by friction head
+  ER, warnings, *-fall <' 0.5ft, @-conveyance ratio exceeded, #-reach too short
+      error, 1-negative or 0 fall
+  ******, terms that can not be computed because' of strong expansion in reach
+
+                              CROSS  SECTION  PROPERTIES
+--------------------------------------------------------------------------------
+  I.D. SEC3                   Velocity head    0.07m     Discharge       57.cms
+   Ref.distance      305.m              Q/K    0.0011        Alpha 1.200  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(m)        (sq. m)   (m)    (m)        (m)      (cms)   %   (mps)
+    1  30.099 0.035     0.42    4.25   4.25      0.10      0.003   0. .20  0.21
+    2  30.099 0.040    33.41   16.76  18.12      1.84      1.259   2. ***  0.28
+    3  30.099 0.030    20.67   40.84  40.88      0.51      0.438   1. .71  0.32
+Total   30.10   ---      54.     62.    63.      0.86      1.700   3.  1.0  0.35
+--------------------------------------------------------------------------------
+Definitions:
+  n, Manning's coefficient of roughness    Q/K = discharge/conveyance
+  F, Froude number F = Ki*Q/(K*A sqrt(g*(Ai/TWi)); Q, discharge; A, total cross-
+      section area; g, acceleration of gravity; Ai, sub-section area; TWi, sub-
+      section top width
+SAC -USGS slope-area program Ver 2.0                                    page  2
+
+Slope-area reach example with level-water surface in cross sections             
+EXAMPLE1:  Simple reach data                                               
+                                                                           
+                                                                           
+
+                              CROSS  SECTION  PROPERTIES
+--------------------------------------------------------------------------------
+  I.D. SEC2                   Velocity head    0.12m     Discharge       57.cms
+   Ref.distance      421.m              Q/K    0.0016        Alpha 1.299  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(m)        (sq. m)   (m)    (m)        (m)      (cms)   %   (mps)
+    1  30.236 0.030     2.75    7.62   7.70      0.36      0.046   0. .67  0.35
+    2  30.236 0.037    31.72   15.54  16.96      1.87      1.305   3. ***  0.36
+    3  30.236 0.030     6.96   32.61  32.62      0.21      0.083   0. .47  0.33
+Total   30.24   ---      41.     56.    57.      0.72      1.434   3.  1.4  0.51
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  I.D. SEC1                   Velocity head    0.07m     Discharge       57.cms
+   Ref.distance      508.m              Q/K    0.0014        Alpha 1.290  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(m)        (sq. m)   (m)    (m)        (m)      (cms)   %   (mps)
+    1  30.404 0.030     1.16    4.24   4.30      0.27      0.016   0. .52  0.32
+    2  30.404 0.045    35.93   17.07  18.88      1.90      1.229   2. ***  0.28
+    3  30.404 0.030    17.17   55.30  55.31      0.31      0.263   0. .58  0.33
+Total   30.40   ---      54.     77.    78.      0.69      1.509   3.  1.0  0.40
+--------------------------------------------------------------------------------
+Definitions:
+  n, Manning's coefficient of roughness    Q/K = discharge/conveyance
+  F, Froude number F = Ki*Q/(K*A sqrt(g*(Ai/TWi)); Q, discharge; A, total cross-
+      section area; g, acceleration of gravity; Ai, sub-section area; TWi, sub-
+      section top width

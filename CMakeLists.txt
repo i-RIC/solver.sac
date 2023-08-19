@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
+###cmake_policy(SET CMP0087 NEW)    # 'install(CODE)' and 'install(SCRIPT)' support generator expressions.
+
 project(SAC Fortran)
 
 include(GNUInstallDirs)
@@ -43,23 +45,44 @@ install(FILES solverdef/definition.xml DESTINATION "${CMAKE_INSTALL_BINDIR}")
 include(CTest)
 
 # add_subdirectory(test) # TODO
+# enable_testing()
+
+add_subdirectory(test)
 
 # POST_BUILD
-if (WIN32)
+if(WIN32)
   # ie "-DCMAKE_PREFIX_PATH=d:/Downloads/iriclib-artifacts/iricsdk-4.0.9/iriclib-4.0.9/lib/cmake/iriclib;d:/Downloads/iriclib-artifacts/iricsdk-4.0.9/hdf5-1.8.21/cmake/hdf5;d:/Downloads/iriclib-artifacts/iricsdk-4.0.9/poco-1.9.4/lib/cmake/Poco"
-  find_package(HDF5 1.8 REQUIRED)
-  find_package(PocoFoundation REQUIRED)
+  # find_package(HDF5 1.8 REQUIRED)
+  # find_package(PocoFoundation REQUIRED)
+
+  # Intel Debug DLLs
+  # find_file(LIBIFCOREMDD_DLL libifcoremdd.dll)
+  # find_file(LIBMMDD_DLL      libmmdd.dll)
+  set(LIBIFCOREMDD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libifcoremdd.dll")
+  set(LIBMMDD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmdd.dll")
+
+  # Intel Non-Debug DLLs
+  # find_file(LIBIFCOREMD_DLL libifcoremd.dll)
+  # find_file(LIBMMD_DLL      libmmd.dll)
+  # find_file(SVML_DISPMD_DLL svml_dispmd.dll)
+  set(LIBIFCOREMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libifcoremd.dll")
+  set(LIBMMD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmd.dll")
+  set(SVML_DISPMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/svml_dispmd.dll")
+
   # copy reqd dlls to test1 directory
   add_custom_command(TARGET SAC POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:iriclib::iriclib>"   "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:Poco::Foundation>"   "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:hdf5::hdf5-shared>"  "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:zlib-shared>"        "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:szip-shared>"        "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "C:\\Program Files (x86)\\Intel\\oneAPI\\compiler\\2023.1.0\\windows\\redist\\intel64_win\\compiler\\$<IF:$<CONFIG:Release>,libifcoremd.dll,libifcoremdd.dll>" "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "C:\\Program Files (x86)\\Intel\\oneAPI\\compiler\\2023.1.0\\windows\\redist\\intel64_win\\compiler\\$<IF:$<CONFIG:Release>,libmmd.dll,libmmdd.dll>"           "$<TARGET_FILE_DIR:SAC>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "C:\\Program Files (x86)\\Intel\\oneAPI\\compiler\\2023.1.0\\windows\\redist\\intel64_win\\compiler\\svml_dispmd.dll"                                          "$<TARGET_FILE_DIR:SAC>"
-    )
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:iriclib::iriclib>"                              "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:Poco::Foundation>"                              "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:hdf5::hdf5-shared>"                             "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:zlib-shared>"                                   "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:szip-shared>"                                   "$<TARGET_FILE_DIR:SAC>"
+    # COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBIFCOREMDD_DLL},${LIBIFCOREMD_DLL}>" "$<TARGET_FILE_DIR:SAC>"
+    # COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBMMDD_DLL},${LIBMMD_DLL}>"           "$<TARGET_FILE_DIR:SAC>"
+    # COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SVML_DISPMD_DLL}"                                           "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBIFCOREMDD_DLL},${LIBIFCOREMD_DLL}>" "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBMMDD_DLL},${LIBMMD_DLL}>"           "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SVML_DISPMD_DLL}"                                           "$<TARGET_FILE_DIR:SAC>"
+  )
 endif()
 
 # message(STATUS "HDF5_Fortran_INCLUDE_DIR = ${HDF5_Fortran_INCLUDE_DIR}")

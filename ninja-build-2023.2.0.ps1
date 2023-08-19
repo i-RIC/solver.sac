@@ -4,7 +4,7 @@ $env:ONLINE_UPDATE_SRC_DIR_DEFAULT="online_update_v4\prod_v4_src"
 $env:BUILD_TYPE="Release"
 
 ##$env:SOURCE_DIR="SOURCE"
-$env:BUILD_DIR="BUILD"
+$env:BUILD_DIR="NINJA-2023.2.0"
 $env:INSTALL_DIR="INSTALL"
 $env:ONLINE_UPDATE_REPO="i-RIC/online_update_v4"
 
@@ -46,10 +46,12 @@ $env:CMAKE_PREFIX_PATH="$env:workspace/iricsdk/iriclib-$env:IRICLIB_VERSION/lib/
 echo $env:CMAKE_PREFIX_PATH
 
 #echo "cmake -G Ninja -S $env:workspace -B $env:workspace/$env:BUILD_DIR -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$env:workspace/$env:INSTALL_DIR"
-echo "cmake -S $env:workspace -B $env:workspace/$env:BUILD_DIR -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$env:workspace/$env:INSTALL_DIR"
+echo "cmake -G Ninja -S $env:workspace -B $env:workspace/$env:BUILD_DIR -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$env:workspace/$env:INSTALL_DIR"
 ##&"cmake -G Ninja -S $env:workspace -B $env:workspace/$env:BUILD_DIR -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$env:workspace/$env:INSTALL_DIR"
 #cmake -G Ninja -S $env:workspace -B $env:workspace/$env:BUILD_DIR -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$env:workspace/$env:INSTALL_DIR
-cmake -S $env:workspace -B $env:workspace/$env:BUILD_DIR -DCMAKE_BUILD_TYPE=$env:BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$env:workspace/$env:INSTALL_DIR
+$env:FC="ifort"
+cmake -G Ninja -S "$env:workspace" -B "$env:workspace/$env:BUILD_DIR" -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_INSTALL_PREFIX="$env:workspace/$env:INSTALL_DIR"
 
 echo "cmake --build $env:workspace/$env:BUILD_DIR --config $env:BUILD_TYPE"
-cmake --build $env:workspace/$env:BUILD_DIR --config $env:BUILD_TYPE
+#cmake --build $env:workspace/$env:BUILD_DIR --config $env:BUILD_TYPE
+cmake --build $env:workspace/$env:BUILD_DIR --verbose

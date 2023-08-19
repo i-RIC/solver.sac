@@ -67,6 +67,7 @@ C     + + + INITIALIZATIONS + + +
       DATA IOVER /1000/
 C
 C     WRITE(*,*)'IN SHYDIE AT TOP'
+      KXND = 0
       ERRIO=FTEMP(2)
       KTS=1
       NCARDS=1
@@ -96,6 +97,7 @@ C           with mhydie driver
 C           IF(FILST.EQ.-1)THEN
             IF(FILST.LE.-1)THEN
               OPEN(UNIT=TBUNT,STATUS='SCRATCH')
+              !open(UNIT=TBUNT)
             ELSE
               OPEN(UNIT=TBUNT,FILE=TBNAM,STATUS='NEW',IOSTAT=IJUNK)
             ENDIF
@@ -265,8 +267,10 @@ C	      write(*,*)nkts,mindep,maxdep,comp(5,I),x
  20           CONTINUE
             ELSE
               DO 15 II=1,NKTS
+                !!write(*,*)'before stage KXND=',KXND
                 CALL STAGE(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT
      #                     ,SUBPRP,KXND,ERFG)
+                !!write(*,*)'after stage KXND=',KXND
                 IF(ERFG.NE.0)THEN
                   ERRNO=13+ERFG
                   CALL ERRPRT(ERRIO,ERRNO,IOVER,SECID)
@@ -361,6 +365,8 @@ C
             IF(EDF.GT.1) FLGS(K)=-1*EDF
             IF(EDF.GT.0) GO TO 35
             DO II=1,NKTS
+              !!write(*,*)'SUBPRP(3,II)=',SUBPRP(3,II)
+              !!write(*,*)'KXND=',KXND
               CALL PROPER(S,G,N,NSA,XSA,X(II),NRUF,RUF,SIN,POUT,SUBPRP,
      #                    KXND)
 C             * write property tables *
@@ -654,6 +660,7 @@ C
       DO 10 I=1,NKTS
       WRITE(TBUNT,200) XSNAME,RD,POUT(13,I),POUT(1,I),POUT(3,I),
      #                 POUT(9,I),POUT(16,I),POUT(17,I)
+      write(*,*)"POUT(1,I)=",POUT(1,I)
       WRITE(TBUNT,210)POUT(2,I),POUT(6,I),POUT(11,I)
       WRITE(TBUNT,220)NSA
       WRITE(TBUNT,230)((SUBPRP(K,INSA),K=1,7),INSA=1,NSA)
@@ -2095,6 +2102,10 @@ C     + + + INITIALIZATIONS + + +
       DATA TINY, A1486 / 1E-9, 1.49 /
 C
 C
+      do ISA=1,NSA
+        write(*,*)'SUBPRP(3,ISA)=',SUBPRP(3,ISA)
+      enddo
+
       CALL XSGEOM(S,G,N,XSA,NSA,YS,SUBPRP,LEL,REL,KXTEND)
       DO 10 I=1,17
         POUT(I)=0.
@@ -2112,6 +2123,7 @@ C
         Q=0.
         A=SUBPRP(2,ISA)
         IF(POUT(14).EQ.0.OR.A.GT.0) THEN
+          write(*,*)'SUBPRP(3,ISA)=',SUBPRP(3,ISA)
           P=AMAX1(TINY,SUBPRP(3,ISA))
           POUT(2)=POUT(2)+SUBPRP(1,ISA)
           WID=SUBPRP(1,ISA)
@@ -2122,8 +2134,10 @@ C
           K=ISA
           CALL RAMP(DEP,NRUF,RUF,K,IND,RUFN)
           UROUGH=AMAX1(TINY,RUFN)
+          write(*,*)"A1486=", A1486, "P=", P, "UROUGH=", UROUGH
           V=A1486*((A/P)**.66666667)/UROUGH
           Q=V*A
+          write(*,*)"Q=", Q, "V=", V, "A=", A
           SUBPRP(7,ISA)=UROUGH
           POUT(1)=POUT(1)+Q
           POUT(3)=POUT(3)+A
@@ -2587,6 +2601,7 @@ c          REL=XI
         ENDIF
         IF(B.GE.0.OR.CLOSED.EQ.1) SUBPRP(1,ISA1)=SUBPRP(1,ISA1)+B
         SUBPRP(2,ISA1) = SUBPRP(2,ISA1)+A
+        write(*,*)'P=',P,'EW=',EW,'EWR=',EWR,'CLOSED=',CLOSED
         IF((EW.GE.EWR).OR.(CLOSED.EQ.1))
      #    SUBPRP(3,ISA1) = SUBPRP(3,ISA1)+P
         PERIMT = PERIMT+P

@@ -109,6 +109,16 @@ C     call statements here to hydie or c374in
       HUNIT(3)=11
       NSEC=30
 
+#ifdef __INTEL_COMPILER
+#ifdef __INTEL_LLVM_COMPILER
+      write(*, 1050), __INTEL_COMPILER, __INTEL_COMPILER_BUILD_DATE
+ 1050 format("Intel ifx, Version ", I0, " Build ", I0)
+#else
+      write(*, 1050), __INTEL_COMPILER, __INTEL_COMPILER_UPDATE,
+     & __INTEL_COMPILER_BUILD_DATE
+ 1050 format("Intel ifort, Version ", I0, ".", I0, " Build ", I0)
+#endif
+#endif
       CALL GETARG(1,ARG1)
       IF (ARG1 == 'Case1.cgn') THEN
         CALL HYDSLP_CGNS(HUNIT,NSEC,VERS,ERROR,RTITLE,SLPCODE,SI)
@@ -140,6 +150,7 @@ C
       ENDIF
       IF(SI.EQ.0.OR.SI.EQ.3)THEN
         WRITE (P,146)
+        WRITE (*,146)
       ELSE
         WRITE (P,246)
       ENDIF
@@ -168,6 +179,10 @@ C  20      CONTINUE
         ENDIF
         DO  90  II=NXSEC,M,-1
           I=II-M+1
+          if(I.EQ.1)then
+              WRITE (*,*) "I=", I
+          ENDIF
+          IER=I
           CALL QSLPA (M, DELH(I), A(I), QNVEY(I),
      #     SRD(I), ALPH(I), Q, SUMH, PHI,CX, RC,RX, SPREAD,IER)
           L = ABS(SRD(I+M-1) - SRD(I))
@@ -187,6 +202,11 @@ C  20      CONTINUE
           IF(SI.EQ.0.OR.SI.EQ.3)THEN
             WRITE (P,147) SECID(I+M-1),SECID(I),SUMH,L,Q,ISPREA,PHI,
      #                  CX,RC,RX,CER
+            WRITE (*,147) SECID(I+M-1),SECID(I),SUMH,L,Q,ISPREA,PHI,
+     #                  CX,RC,RX,CER
+            if(I.EQ.1)then
+              WRITE (*,*) "Q=", Q
+            ENDIF
           ELSE
             WRITE (P,247) SECID(I+M-1),SECID(I),FTMTR(SUMH),FTMTR(L),
      #                    FT3M3(Q),ISPREA,FTMTR(PHI),CX,RC,RX,CER
@@ -359,6 +379,7 @@ C
       DATA  K, KP / 0.5, 0.0 /
       DATA  G / 32.2 /
 C
+      II = IER
       IER = 0
       Q      = -1E36
       SPREAD = -1E36
@@ -370,6 +391,13 @@ C
       DO 55 I=1,M-1
         H = H + DELH(I)
         FSUM = FSUM + ABS(SRD(I)-SRD(I+1))/(QNVEY(I)*QNVEY(I+1))
+        if(II.EQ.1)then
+          write(*,*) "SRD(I)=", SRD(I)
+          write(*,*) "SRD(I+1)=", SRD(I+1)
+          write(*,*) "QNVEY(I)=", QNVEY(I)
+          write(*,*) "QNVEY(I+1)=", QNVEY(I+1)
+          write(*,*) "FSUM=", FSUM
+        endif        
         ESUM = ESUM + ABS( ALPH(I)/A(I)**2 - ALPH(I+1)/A(I+1)**2 )
 55    CONTINUE
 C      FCESUM=0.
@@ -416,6 +444,11 @@ C         negative change in velocity head- large expansion possible
           IER = 2
         ENDIF
       ELSE
+        if(II.EQ.1)then
+          write(*,*) "H=", H
+          write(*,*) "FSUM=", FSUM
+          write(*,*) "PHII=", PHII
+        endif
         Q0 = SQRT( H/(FSUM*PHII0) )
         Q1 = SQRT( H/(FSUM*PHII1) )
         Q  = SQRT( H/(FSUM*PHII ) )
@@ -511,7 +544,8 @@ C
 C     code modified to allow title to be entered as 3rd parameter on execute command line
 
       OFILE=ABS(FTEMP(2))
-      OPEN(OFILE,FILE=TBNAM,STATUS='NEW')
+      !OPEN(OFILE,FILE=TBNAM,STATUS='NEW')
+      OPEN(OFILE,FILE=TBNAM,STATUS='REPLACE')
       WRITE(OFILE,700) VERS
       WRITE(OFILE,'(A)')'Echo input data file '
       WRITE(OFILE,702) RTITLE
@@ -582,6 +616,7 @@ C     + + + FORMATS + + +
 230   FORMAT (6(E13.6,1X),F6.4)
 240   FORMAT (A75)
 C
+      open(UNIT=88)
       DO 5 I=1,3
         READ(TBUNT,240)TITLES(I)
  5    CONTINUE
@@ -591,6 +626,14 @@ C
       I=I+1
       READ(TBUNT,200,END=99) SECID(I),SRD(I),STAGE(I),QNVEY(I),A(I),
      #     ALPH(I),LEL,REL
+      write(88,200) SECID(I),SRD(I),STAGE(I),QNVEY(I),A(I),
+     #     ALPH(I),LEL,REL
+      if(I.EQ.1)then
+        write(*,*)"QNVEY(I=1)",QNVEY(I)
+      endif
+      if(I.EQ.2)then
+        write(*,*)"QNVEY(I=2)",QNVEY(I)
+      endif
       READ(TBUNT,210)TOPW(I),WPERM(I),NROUGH(I)
       READ(TBUNT,220) NSA(I)
       READ(TBUNT,230)((SUBPRP(I,K,INSA),K=1,7),INSA=1,NSA(I))
