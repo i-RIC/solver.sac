@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 export PACKAGE_DIR=solver.cap
 export ONLINE_UPDATE_SRC_DIR="online_update_v4/dev_v4_src"
 export ONLINE_UPDATE_SRC_DIR_DEFAULT="online_update_v4/prod_v4_src"
@@ -19,7 +20,7 @@ echo $url
 export IRICLIB_VERSION=$(echo $url | sed 's|.*/iricsdk-\([^\.]*\).\([^\.]*\).\([^\.]*\)-ubuntu-22.04.7z|\1.\2.\3|')
 if ! [ -d "iricsdk/iriclib-$IRICLIB_VERSION" ]; then
     rm -rf iricsdk
-    ##curl -LO $url
+    curl -LO $url
     file=$(echo $url | sed 's|.*/iricsdk-\([^\.]*\).\([^\.]*\).\([^\.]*\)-ubuntu-22.04.7z|iricsdk-\1.\2.\3-ubuntu-22.04.7z|')
     echo 7z x $file
     7z x $file
