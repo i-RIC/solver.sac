@@ -75,6 +75,10 @@ jobs:
       with:
         cache: true
 
+    - name: List oneAPI
+      run: |
+        Get-ChildItem -Recurse "C:\Program Files (x86)\Intel\oneAPI"
+
     - name: Export POCO version
       run: |
         Get-ChildItem ${{github.workspace}}\iricsdk | Where-Object {
