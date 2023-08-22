@@ -26,6 +26,9 @@ add_executable(SAC
 )
 
 target_link_libraries(SAC PRIVATE iriclib::iriclib)
+if(UNIX AND NOT APPLE)
+  set_target_properties(SAC PROPERTIES INSTALL_RPATH "\$ORIGIN")
+endif()
 
 if(IRIC_SOLVER_USE_OPENMP AND OpenMP_Fortran_FOUND)
   target_link_libraries(SAC PRIVATE OpenMP::OpenMP_Fortran)
@@ -82,6 +85,14 @@ if(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBIFCOREMDD_DLL},${LIBIFCOREMD_DLL}>" "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBMMDD_DLL},${LIBMMD_DLL}>"           "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SVML_DISPMD_DLL}"                                           "$<TARGET_FILE_DIR:SAC>"
+  )
+else()
+  add_custom_command(TARGET SAC POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:iriclib::iriclib>"                              "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:Poco::Foundation>"                              "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:hdf5::hdf5-shared>"                             "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:zlib-shared>"                                   "$<TARGET_FILE_DIR:SAC>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:szip-shared>"                                   "$<TARGET_FILE_DIR:SAC>"
   )
 endif()
 
