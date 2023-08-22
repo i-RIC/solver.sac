@@ -61,7 +61,7 @@ if(WIN32)
   # Intel Debug DLLs
   # find_file(LIBIFCOREMDD_DLL libifcoremdd.dll)
   # find_file(LIBMMDD_DLL      libmmdd.dll)
-  if(defined $ENV{INTEL_COMPILER_VERSION})
+  if(defined ENV{INTEL_COMPILER_VERSION})
     set(LIBIFCOREMDD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libifcoremdd.dll")
     set(LIBMMDD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libmmdd.dll")
   else()
