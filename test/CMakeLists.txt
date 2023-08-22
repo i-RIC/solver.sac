@@ -28,8 +28,7 @@ if(WIN32)
              COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} $ENV{ComSpec} /c "run.bat" $<TARGET_FILE:SAC> "example4" "Slope-area reach example with level-water surface in cross sections, metric output")
     add_test(NAME example5
              COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} $ENV{ComSpec} /c "run.bat" $<TARGET_FILE:SAC> "example5" "Simple reach example with metric input and feet-second output")
-
-elseif(BASH_PROGRAM)             
+elseif(BASH_PROGRAM)
     add_test(NAME example1
              COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} ${BASH_PROGRAM} "run.sh" $<TARGET_FILE:SAC> "example1" "Slope-area reach example with level-water surface in cross sections")
     add_test(NAME example2
