@@ -15,6 +15,11 @@ configure_file(example5.out example5.out.expected COPYONLY)
 configure_file(run.bat run.bat COPYONLY)
 configure_file(run.sh run.sh COPYONLY)
 
+# iRIC cgns version
+configure_file(Case1.cgn Case1.cgn COPYONLY)
+configure_file(consoleLog.txt consoleLog.txt.expected COPYONLY)
+configure_file(run_cgns.bat run_cgns.bat COPYONLY)
+
 find_program(BASH_PROGRAM bash)
 
 if(WIN32)
@@ -28,6 +33,9 @@ if(WIN32)
              COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} $ENV{ComSpec} /c "run.bat" $<TARGET_FILE:SAC> "example4" "Slope-area reach example with level-water surface in cross sections, metric output")
     add_test(NAME example5
              COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} $ENV{ComSpec} /c "run.bat" $<TARGET_FILE:SAC> "example5" "Simple reach example with metric input and feet-second output")
+    # iRIC cgns version
+    add_test(NAME SAC_Tutorial_1
+             COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} $ENV{ComSpec} /c "run_cgns.bat" $<TARGET_FILE:SAC>)
 elseif(BASH_PROGRAM)
     add_test(NAME example1
              COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR} ${BASH_PROGRAM} "run.sh" $<TARGET_FILE:SAC> "example1" "Slope-area reach example with level-water surface in cross sections")

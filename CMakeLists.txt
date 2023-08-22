@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-###cmake_policy(SET CMP0087 NEW)    # 'install(CODE)' and 'install(SCRIPT)' support generator expressions.
-
 project(SAC Fortran)
 
 include(GNUInstallDirs)
@@ -34,22 +32,11 @@ if(IRIC_SOLVER_USE_OPENMP AND OpenMP_Fortran_FOUND)
   target_link_libraries(SAC PRIVATE OpenMP::OpenMP_Fortran)
 endif()
 
-# set stack on windows
-# if(WIN32)
-#   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /HEAP:100000000,100000000 /STACK:1000000000,1000000000")
-# #else()
-# #  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fmax-stack-var-size=100000000")
-# endif()
-
 install(TARGETS SAC DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 install(FILES solverdef/definition.xml DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 include(CTest)
-
-# add_subdirectory(test) # TODO
-# enable_testing()
-
 add_subdirectory(test)
 
 # POST_BUILD
@@ -90,9 +77,6 @@ if(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:hdf5::hdf5-shared>"                             "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:zlib-shared>"                                   "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:szip-shared>"                                   "$<TARGET_FILE_DIR:SAC>"
-    # COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBIFCOREMDD_DLL},${LIBIFCOREMD_DLL}>" "$<TARGET_FILE_DIR:SAC>"
-    # COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBMMDD_DLL},${LIBMMD_DLL}>"           "$<TARGET_FILE_DIR:SAC>"
-    # COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SVML_DISPMD_DLL}"                                           "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBIFCOREMDD_DLL},${LIBIFCOREMD_DLL}>" "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<IF:$<CONFIG:Debug>,${LIBMMDD_DLL},${LIBMMD_DLL}>"           "$<TARGET_FILE_DIR:SAC>"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SVML_DISPMD_DLL}"                                           "$<TARGET_FILE_DIR:SAC>"
