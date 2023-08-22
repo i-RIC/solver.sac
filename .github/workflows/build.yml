@@ -70,6 +70,28 @@ jobs:
         # export environment variable IRICLIB_VERSION for later steps
         Write-Output "IRICLIB_VERSION=$($matches.major).$($matches.minor).$($matches.patch)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+    - name: Check tar 0
+      shell: bash
+      run: which tar
+
+    - name: Check tar 1
+      run: Get-Command tar
+
+    - name: Check tar 2
+      shell: bash
+      run: mv "C:\Program Files\Git\usr\bin\tar.exe" "$RUNNER_TEMP\tar.exe"
+
+    - name: Check tar 3
+      shell: bash
+      run: which tar
+
+    - name: Check tar 4
+      run: Get-Command tar
+
+    - name: Check tar 5
+      shell: bash
+      run: mv "$RUNNER_TEMP\tar.exe" 'C:\Program Files\Git\usr\bin\tar.exe'
+
     - name: Install oneAPI Fortran
       uses: i-RIC/install-intelfortran-action@v1
       with:
