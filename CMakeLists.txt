@@ -61,16 +61,28 @@ if(WIN32)
   # Intel Debug DLLs
   # find_file(LIBIFCOREMDD_DLL libifcoremdd.dll)
   # find_file(LIBMMDD_DLL      libmmdd.dll)
-  set(LIBIFCOREMDD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libifcoremdd.dll")
-  set(LIBMMDD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmdd.dll")
+  if(defined $ENV{INTEL_COMPILER_VERSION})
+    set(LIBIFCOREMDD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libifcoremdd.dll")
+    set(LIBMMDD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libmmdd.dll")
+  else()
+    set(LIBIFCOREMDD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libifcoremdd.dll")
+    set(LIBMMDD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmdd.dll")
+  endif()
+
 
   # Intel Non-Debug DLLs
   # find_file(LIBIFCOREMD_DLL libifcoremd.dll)
   # find_file(LIBMMD_DLL      libmmd.dll)
   # find_file(SVML_DISPMD_DLL svml_dispmd.dll)
-  set(LIBIFCOREMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libifcoremd.dll")
-  set(LIBMMD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmd.dll")
-  set(SVML_DISPMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/svml_dispmd.dll")
+  if(defined $ENV{INTEL_COMPILER_VERSION})
+    set(LIBIFCOREMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libifcoremd.dll")
+    set(LIBMMD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libmmd.dll")
+    set(SVML_DISPMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/svml_dispmd.dll")
+  else()
+    set(LIBIFCOREMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libifcoremd.dll")
+    set(LIBMMD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmd.dll")
+    set(SVML_DISPMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/svml_dispmd.dll")
+  endif()
 
   # copy reqd dlls to test1 directory
   add_custom_command(TARGET SAC POST_BUILD
