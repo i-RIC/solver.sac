@@ -69,12 +69,11 @@ if(WIN32)
     set(LIBMMDD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/windows/redist/intel64_win/compiler/libmmdd.dll")
   endif()
 
-
   # Intel Non-Debug DLLs
   # find_file(LIBIFCOREMD_DLL libifcoremd.dll)
   # find_file(LIBMMD_DLL      libmmd.dll)
   # find_file(SVML_DISPMD_DLL svml_dispmd.dll)
-  if(DEFINED $ENV{INTEL_COMPILER_VERSION})
+  if(DEFINED ENV{INTEL_COMPILER_VERSION})
     set(LIBIFCOREMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libifcoremd.dll")
     set(LIBMMD_DLL      "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/libmmd.dll")
     set(SVML_DISPMD_DLL "C:/Program Files (x86)/Intel/oneAPI/compiler/$ENV{INTEL_COMPILER_VERSION}/windows/redist/intel64_win/compiler/svml_dispmd.dll")
