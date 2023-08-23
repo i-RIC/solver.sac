@@ -63,6 +63,7 @@ C
 C     + + + INITIALIZATIONS + + +
       DATA IOVER /1000/
 C
+      KXND=0
       ERRIO=FTEMP(2)
       KTS=1
       NCARDS=1

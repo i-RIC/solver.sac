@@ -67,6 +67,7 @@ C     + + + INITIALIZATIONS + + +
       DATA IOVER /1000/
 C
 C     WRITE(*,*)'IN SHYDIE AT TOP'
+      KXND=0
       ERRIO=FTEMP(2)
       KTS=1
       NCARDS=1
