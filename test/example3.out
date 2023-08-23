@@ -1,0 +1,135 @@
+SAC -USGS slope-area program Ver 2.0                                    page  0
+
+Echo input data file 
+Sloping water surface with conveyance weighting                                 
+XS   SEC4 1000                                                                  
+GR        2,13.78 5,13.4 10,13.2 15,13.1 20,12.6 22,10.7                        
+GR        27,9.7 31,9.5 35,9.3 40,9.2 45,9.4 50,9.7                             
+GR        55,9.7 60,9.7 64,10.5 67,10.6 69,12.7 72,13.4                         
+GR        74,13.75 72.,13.8 5.,13.8 2.,13.78                                    
+N         0.080 0.045 0.045                                                     
+SA        20. 69.                                                               
+HP   SEC4 13.8                                                                  
+XS   SEC3 1119                                                                  
+GR        1,14.71 5,14.1 10,13.7 14,13.2 16,11.9 20,11.3                        
+GR        25,10.8 30,10.5 35,10.5 40,10.4 45,10.5 50,10.4                       
+GR        55,10.5 60,10.7 63,11.5 66,12.2 68,14.1 72,14.6                       
+GR        73,14.95 72.,14.9 45.,14.9 40.,14.8 16.,14.8                          
+GR        14.,14.7 5.,14.7 1.,14.71                                             
+N         0.080 0.045 0.045                                                     
+SA        14. 68.                                                               
+HP   SEC3 14.95                                                                 
+XS   SEC2 1209                                                                  
+GR        2,15.26 4,14.9 8,14.4 11,14.0 12,11.6 15,11.6                         
+GR        20,11.8 25,11.8 30,11.5 35,11.3 40,11.1 45,11.1                       
+GR        50,11.1 55,11.5 59,12.2 63,13.1 66,15.1 67,15.51                      
+GR        66,15.5 55.,15.5 50.,15.4 30.,15.4 25.,15.3 4.,15.3                   
+GR        2,15.26                                                               
+N         0.045 0.045                                                           
+SA        11.                                                                   
+HP   SEC2 15.51                                                                 
+XS   SEC1 1330                                                                  
+GR        1,16.3 4,15.0 7,13.5 10,13.2 15,13.1 20,12.9 25,13.0                  
+GR        30,12.9 35,12.4 40,12.5 45,12.1 50,12.5 55,12.6 60,13.7               
+GR        64,15.2 67,16.4 35.,16.4 30.,16.3 1,16.3                              
+N         0.045                                                                 
+HP   SEC1 16.4                                                                  
+SAC -USGS slope-area program Ver 2.0                                    page  1
+
+Sloping water surface with conveyance weighting                                 
+EXAMPLE 3:  Sloping water surface with conveyance weighting                
+                                                                           
+                                                                           
+
+                             DISCHARGE COMPUTATIONS
+           K weighted  Reach
+             dH,fall  length  Discharge  Spread    HF     CX     RC     RX  ER
+               (ft)     (ft)     (cfs)     (%)    (ft)
+ SEC1 - SEC2   0.96     121.      1330.      0   0.949  1.000  0.008  0.000   # 
+ SEC2 - SEC3   0.55      90.      1319.      5   0.580  0.974  0.000 -0.099   # 
+ SEC3 - SEC4   1.04     119.      1443.      0   0.904  1.000  0.155  0.000   # 
+
+ SEC1 - SEC3   1.51     211.      1326.      1   1.530  0.990  0.005 -0.038   # 
+ SEC2 - SEC4   1.60     209.      1396.      2   1.496  0.990  0.088 -0.043   # 
+
+ SEC1 - SEC4   2.55     330.      1370.      1   2.449  0.994  0.055 -0.025     
+
+Definitions:
+  Spread, the percent difference between discharge computed with no expansion
+      loss (k=0) and discharge computed with full expansion loss (k=1.0), divided
+      by the discharge computed with full expansion loss
+  HF, friction head- HF = sum of Q*Q*L/(K1*K2) over subreaches; Q, discharge;
+      L, reach length; K1, upstream section conveyance;
+      K2, downstream section conveyance
+  CX, the computed discharge divided by the discharge computed with no expansion
+      loss (k=0)
+  RC, velocity head change in contracting section divided by friction head
+  RX, velocity head change in expanding section divided by friction head
+  ER, warnings, *-fall <' 0.5ft, @-conveyance ratio exceeded, #-reach too short
+      error, 1-negative or 0 fall
+  ******, terms that can not be computed because' of strong expansion in reach
+
+                              CROSS  SECTION  PROPERTIES
+--------------------------------------------------------------------------------
+  I.D. SEC4                   Velocity head    0.75ft    Discharge     1370.cfs
+   Ref.distance     1000.ft             Q/K    0.0076        Alpha 1.104  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(ft)       (sq.ft)   (ft)   (ft)       (ft)     (cfs)   %   (fps)
+    1   13.80 0.080     11.1    18.0   18.1      0.61      0.149   1.  1.2  0.26
+    2   13.80 0.045    193.1    49.0   50.9      3.80     15.553  99.  7.0  0.62
+    3   13.79 0.045      2.7     5.0    5.1      0.52      0.057   0.  1.9  0.45
+Total   13.80   ---     207.     72.    74.      2.79     15.759 100.  6.6  0.69
+--------------------------------------------------------------------------------
+Definitions:
+  n, Manning's coefficient of roughness    Q/K = discharge/conveyance
+  F, Froude number F = Ki*Q/(K*A sqrt(g*(Ai/TWi)); Q, discharge; A, total cross-
+      section area; g, acceleration of gravity; Ai, sub-section area; TWi, sub-
+      section top width
+SAC -USGS slope-area program Ver 2.0                                    page  2
+
+Sloping water surface with conveyance weighting                                 
+EXAMPLE 3:  Sloping water surface with conveyance weighting                
+                                                                           
+                                                                           
+
+                              CROSS  SECTION  PROPERTIES
+--------------------------------------------------------------------------------
+  I.D. SEC3                   Velocity head    0.63ft    Discharge     1370.cfs
+   Ref.distance     1119.ft             Q/K    0.0062        Alpha 1.083  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(ft)       (sq.ft)   (ft)   (ft)       (ft)     (cfs)   %   (fps)
+    1   14.70 0.080     10.2    13.0   13.1      0.78      0.161   1.  1.2  0.25
+    2   14.85 0.045    212.0    54.0   55.4      3.83     17.170  99.  6.4  0.57
+    3   14.90 0.045      2.3     5.0    5.1      0.46      0.046   0.  1.6  0.40
+Total   14.84   ---     225.     72.    74.      3.05     17.378 100.  6.1  0.61
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  I.D. SEC2                   Velocity head    0.69ft    Discharge     1370.cfs
+   Ref.distance     1209.ft             Q/K    0.0078        Alpha 1.031  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(ft)       (sq.ft)   (ft)   (ft)       (ft)     (cfs)   %   (fps)
+    1   15.30 0.045      6.3     9.0    9.1      0.69      0.163   1.  2.3  0.48
+    2   15.40 0.045    202.8    56.0   58.5      3.47     15.377  99.  6.7  0.62
+Total   15.40   ---     209.     65.    68.      3.09     15.541 100.  6.6  0.64
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+  I.D. SEC1                   Velocity head    0.68ft    Discharge     1370.cfs
+   Ref.distance     1330.ft             Q/K    0.0089        Alpha 1.000  
+
+  Sub  Water                  Top   Wetted   Hydraulic   Conveyance
+ area surface   n     Area   width perimeter   radius   x 0.001      Vel.    F
+  no. el.(ft)       (sq.ft)   (ft)   (ft)       (ft)     (cfs)   %   (fps)
+    1   16.35 0.045    207.1    66.0   67.3      3.08     14.498 100.  6.6  0.66
+Total   16.35   ---     207.     66.    67.      3.08     14.498 100.  6.6  0.66
+--------------------------------------------------------------------------------
+Definitions:
+  n, Manning's coefficient of roughness    Q/K = discharge/conveyance
+  F, Froude number F = Ki*Q/(K*A sqrt(g*(Ai/TWi)); Q, discharge; A, total cross-
+      section area; g, acceleration of gravity; Ai, sub-section area; TWi, sub-
+      section top width

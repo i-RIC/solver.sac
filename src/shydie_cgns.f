@@ -1,18 +1,19 @@
       SUBROUTINE HYDIE_CGNS
-     I                (TBUNT,FTEMP,NID,IDLST
+     I                (CGNSID,TBUNT,FTEMP,NID,IDLST
      M                 ,FLGS,SI,FILST)
 C
 C     + + + PURPOSE + + +
 C     THIRD DEVELOPEMENT PROGRAM.  USES A WSPRO DATA SET AS THE DATA BASE
 C     AND NOT A WDM FILE AS IN PREVIOUS VERSIONS.
 C
+      USE iric
 C     + + + DUMMY ARGUMENTS + + +
-      INTEGER FCARD,TBUNT,NID,FLGS(NID),FILST,FTEMP(2),SI
+      INTEGER CGNSID,TBUNT,NID,FLGS(NID),FILST,FTEMP(2),SI
       CHARACTER*16 IDLST(NID)
 C
 C     + + + ARGUMENT DEFINITIONS + + +
 C     SI      - units flag input/output 0-fts/fts 1-ms/ms 2-fts/ms 3-ms/fts
-C     FCARD   - file unit no. for data file
+C     CGNSID  - iRIC CGNS/HDF5 file identifier (replaces FCARD)
 C     TBUNT   - file unit no. for table output
 C     FTEMP(1)   - file unit no. for scratch file
 C     FTEMP(2)   - file unit no. for error printing, <0 prints to screen and
@@ -85,10 +86,10 @@ C
       NRUF=0
       SRD = 0
 
-      CALL CG_IRIC_GETGRIDCOORD2D_F(GX,GY,IER)
+      CALL CG_IRIC_READ_GRID2D_COORDS(CGNSID,GX,GY,IER)
 
-      CALL CG_IRIC_READ_COMPLEX_COUNT_F(
-     #  'Crosssection',ISEC,IER)
+      CALL CG_IRIC_READ_COMPLEX_COUNT(
+     #  CGNSID,'Crosssection',ISEC,IER)
 
       DO 35 K=ISEC,1,-1
         EDF=0
@@ -112,7 +113,7 @@ C
           SRD_FT = SRD
         ENDIF
 
-        CALL WSPCDS_CGNS(FTEMP,K,S,G,N,NSA,XSA,NRUF,RUF
+        CALL WSPCDS_CGNS(CGNSID,FTEMP,K,S,G,N,NSA,XSA,NRUF,RUF
      #              ,SECPRP,SECID,SRD,SI,EDF)
         IF(EDF.GT.0) GO TO 35
 
@@ -173,7 +174,7 @@ C     Programmed by: Keisuke Inoue
       END FUNCTION FTOSTR
 
       SUBROUTINE WSPCDS_CGNS
-     I                 (FTUNIT,K,S,G,N,NSA,XSA,NRUF,
+     I                 (CGNSID,FTUNIT,K,S,G,N,NSA,XSA,NRUF,
      O                  RUF,SECPRP,SECID,SRD,SI,EDFG)
 C
 C     + + +  PURPOSE + + +
@@ -183,10 +184,12 @@ C     bridge, spur dike, road section and culvert header cards and
 C     data.  Skew angle correction fixed on 1.17.97
 C
 C     + + + PARAMETERS + + +
+      USE iric
       INTEGER NCORD,NSUBS,NSBS,NXSEC
       PARAMETER (NXSEC=200,NCORD=150, NSUBS=19, NSBS=40)
 C
 C     + + + DUMMY ARGUMENTS + + +
+      INTEGER CGNSID
       INTEGER FTUNIT(2),K,NRUF,N,NSA,EDFG,SI
       REAL S(NCORD),G(NCORD),XSA(NSUBS),RUF(3,NSBS),
      #     SECPRP(3,NXSEC),SRD,N_SIMPLE
@@ -194,6 +197,7 @@ C     + + + DUMMY ARGUMENTS + + +
       CHARACTER*16 SECIDNUM
 C
 C     + + + ARGUMENT DEFINITIONS + + +
+C     CGNSID     - iRIC CGNS/HDF5 file identifier
 C     FTUNIT(1)  - unit on which temp DA file is openned
 C     FTUNIT(2)  - unit on which error messages are printed
 C     K       - cross section ID (starts from 1)
@@ -237,22 +241,22 @@ C     + + + INPUT FORMAT + + +
       
       SKEW=1
       
-      CALL CG_IRIC_READ_COMPLEX_STRING_F(
-     #  'Crosssection', K, 'name', SECID, IER)
+      CALL CG_IRIC_READ_COMPLEX_STRING(
+     #  CGNSID, 'Crosssection', K, 'name', SECID, IER)
      
       WRITE(ERRIO,101) 'XS   ' // SECID(1:5) // TRIM(FTOSTR(SRD))
      
-      CALL CG_IRIC_READ_COMPLEX_INTEGER_F(
-     #  'Crosssection', K, 'n_type', N_TYPE, IER)
+      CALL CG_IRIC_READ_COMPLEX_INTEGER(
+     #  CGNSID, 'Crosssection', K, 'n_type', N_TYPE, IER)
 
       IF (N_TYPE == 0) THEN
 C       Simple
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALSIZE_F(
-     #    'Crosssection', K, 'appr_xs', N, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONAL_REALSINGLE_F(
-     #    'Crosssection', K, 'appr_xs', S, G, IER)
-        CALL CG_IRIC_READ_COMPLEX_REALSINGLE_F(
-     #    'Crosssection', K, 'n_simple', N_SIMPLE, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALSIZE(
+     #    CGNSID, 'Crosssection', K, 'appr_xs', N, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONAL_REALSINGLE_1D(
+     #    CGNSID, 'Crosssection', K, 'appr_xs', S, G, IER)
+        CALL CG_IRIC_READ_COMPLEX_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_simple', N_SIMPLE, IER)
 
         NRUF=1
         RUF(1,1)=1
@@ -263,14 +267,14 @@ C       Simple
 
       ELSE IF (N_TYPE == 1) THEN
 C       Horizontal distribution
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALSIZE_F(
-     #    'Crosssection', K, 'n_h', N, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h','X', S, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h','Y', G, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h', 'NVAL', N_TMP, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALSIZE(
+     #    CGNSID, 'Crosssection', K, 'n_h', N, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h','X', S, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h','Y', G, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h', 'NVAL', N_TMP, IER)
 
         NRUF=1
         RUF(1,1)=1
@@ -292,20 +296,20 @@ C       Horizontal distribution
 
       ELSE IF (N_TYPE == 2) THEN
 C       Vertical distribution
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALSIZE_F(
-     #    'Crosssection', K, 'n_h_v', N, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h_v', 'X', S, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h_v', 'Y', G, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h_v', 'BOTD', BOTD, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h_v', 'TOPD', TOPD, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     #    'Crosssection', K, 'n_h_v','BOTN', BOTN, IER)
-        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE_F(
-     "    'Crosssection', K, 'n_h_v','TOPN', TOPN, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALSIZE(
+     #    CGNSID, 'Crosssection', K, 'n_h_v', N, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h_v', 'X', S, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h_v', 'Y', G, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h_v', 'BOTD', BOTD, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h_v', 'TOPD', TOPD, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     #    CGNSID, 'Crosssection', K, 'n_h_v','BOTN', BOTN, IER)
+        CALL CG_IRIC_READ_COMPLEX_FUNCTIONALWITHNAME_REALSINGLE(
+     "    CGNSID, 'Crosssection', K, 'n_h_v','TOPN', TOPN, IER)
         NRUF=2
         RUF(1,1)=1
         RUF(2,1)=BOTN(2)
@@ -335,8 +339,8 @@ C       Vertical distribution
       ENDIF
 
       WSE_OK = 1
-      CALL CG_IRIC_READ_FUNCTIONAL_REALSINGLE_F(
-     #  'wse', POS, WSE, IER)
+      CALL CG_IRIC_READ_FUNCTIONAL_REALSINGLE_1D(
+     #  CGNSID, 'wse', POS, WSE, IER)
       IF (IER /= 0) THEN
         WSE_OK = 0
       ENDIF
